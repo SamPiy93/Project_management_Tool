@@ -44,7 +44,7 @@
             <!--logo start-->
             <a href="<?php echo base_url(); ?>" class="logo"><b>PMT V0</b></a>
             <!--logo end-->
-            <div class="nav notify-row" id="top_menu">
+            <div class="nav notify-row" id="top_menu" style="border:0px solid black;width:40%">
                 <!--  notification start -->
                 <ul class="nav top-menu">
                     <!-- settings start -->
@@ -181,11 +181,28 @@
                         </ul>
                     </li>
                     <!-- inbox dropdown end -->
+                    <!--search bar start-->
+                    <script>
+                        function validate_search(){
+                            var key=document.getElementById('project_search').value;
+                            if(key==null || key==""){
+                                alert("Search Field Empty!");
+                                return false;
+                            }
+                        }
+                    </script>
+                    <form action="<?php echo base_url(); ?>Index_controller/searchProjects" method="post">
+                        <input type="search" style="margin-left:10px;padding: 5px;width:60%;border-radius: 7px;border-style: solid;border-width: 3px;border-color: #ccc;outline: 0px;" name="project_search" id="project_search" placeholder="Search Projects" maxlength="100">
+                        <button type="submit" onsubmit="return validate_search()" name="submit" value="submit" class="btn btn-round" style="outline: 0;background: #999999;border-radius: 20px;"><i class="fa fa-search"></i></button>
+                    </form>
+                    
+                    <a hidden="true" href="#searchModal" data-toggle="modal" id="clickMe">click</a>
+                    <!--search bar end-->
                 </ul>
                 <!--  notification end -->
             </div>
             <div class="top-menu">
-            	<ul class="nav pull-right top-menu">
+                <ul class="nav pull-right top-menu">  
                     <li><a class="logout" href="login.php">Logout</a></li>
             	</ul>
             </div>
@@ -201,11 +218,11 @@
               <!-- sidebar menu start-->
               <ul class="sidebar-menu" id="nav-accordion">
               
-              	  <p class="centered"><a href="profile.php"><img src="assets/img/ui-sam.jpg" class="img-circle" width="60"></a></p>
+                  <p class="centered"><a href="profile.php"><img src="<?php echo base_url() ?>assets/img/ui-sam.jpg" class="img-circle" width="60"></a></p>
               	  <h5 class="centered">Marcel Newman</h5>
               	  	
                   <li class="mt">
-                      <a class="active" href="index.php">
+                      <a class="active" href="<?php echo base_url(); ?>Index_controller/index">
                           <i class="fa fa-dashboard"></i>
                           <span>Dashboard</span>
                       </a>
@@ -224,6 +241,19 @@
                                 <span>Add Projects</span>
                             </a>
                           </li>
+                          <script>
+                              function setProjectBoxValues(name,details,visibility,mem_count){
+                                  if(visibility==1){
+                                      visibility="public";
+                                  }else{
+                                      visibility="private";
+                                  }
+                                  document.getElementById('pro_head_1').innerHTML=name;
+                                  document.getElementById('pro_para_1').innerHTML=details;
+                                  document.getElementById('pro_para_2').innerHTML=visibility;
+                                  document.getElementById('hidden_pro_mem_count').value=mem_count;
+                              }
+                          </script>
                           <?php
                             foreach ($projects as $projects){
                                 $p_id=$projects['project_id'];
@@ -231,28 +261,30 @@
                                 $p_description=$projects['project_description'];
                                 $p_visibility=$projects['project_visibility'];
                                 $p_member_count=$projects['project_member_count'];
+                                
+                                list($project_name)=  explode(" ", $p_name);
                                 echo "<li class=\"sub-menu\">";
-                                echo "<a href=\"\" >
+                                echo "<a href=\"\" title=\"$p_name\">
                                         <i class=\"fa fa-archive\"></i>
-                                        <span>".$p_name."</span>
+                                        <span>".$project_name." . . .</span>
                                     </a>
                                     <ul class=\"sub\">
                                         <li><a href=\"";
                                 echo base_url()."Index_controller/project_tasks/".$p_id;
                                 echo "\"><i class=\"fa fa-plus-circle\"></i>Tasks</a></li>
-                                        <li><a  href=\"buttons.html\"><i class=\"fa fa-plus-circle\"></i>Members</a></li>
-                                        <li><a  href=\"";
+                                        <li><a data-toggle=\"modal\" href=\"#pdmb\" onclick=\"setProjectBoxValues(";
+                                echo "'".$p_name."'".","."'".$p_description."'".","."'".$p_visibility."'".",'".$p_member_count."'";
+                                echo ")\"><i class=\"fa fa-eye\"></i>Details</a></li>
+                                        <li><a href=\"";
                                 echo base_url()."Index_controller/delete_project/";
                                 echo $p_id;
-                                echo "\"><i class=\"fa fa-minus-circle\"></i>Project</a></li>
-                                    </ul>";
+                                echo "\"><i class=\"fa fa-minus-circle\"></i>Project</a></li></ul>";
                                 echo "</li>";
                                 //echo "<li style=\"width:100%;border:1px solid white\"><p style=\"width:100%;border:1px solid white\"><a href=\"";
                                 //echo base_url()."Index_controller/project_tasks/$p_id";
                                 //echo "\" style=\"width:50%;border:1px solid white\">".$p_name."</a><ul><li><a href=\"\" style=\"width:40%;border:1px solid green;\">dsa</a></li></ul></p></li>";
                                 }
                            ?>
-                          
                       </ul>
                       <li class="sub-menu">
                         <a href="javascript:;" >
@@ -265,7 +297,7 @@
                             <li><a  href="panels.html">Panels</a></li>
                         </ul>
                     </li>
-                  </li>
+                  
             <!--end of projects-->
                  
               </ul>
@@ -284,6 +316,7 @@
               <div class="row">
                   
                   <div class="col-lg-9 main-chart">
+                      <!--project task div end-->
                       <?php if(isset($row) && isset($projects)){ 
                           foreach($row as $row){
                                 $id=$row['project_id'];
@@ -292,14 +325,14 @@
                           ?>
                       <h3><i class="fa fa-trophy">&nbsp;<?php echo $name;?></i></h3>
                       <div class="row mtbox" style="border:0px solid black;height:300px;">
-                        <div class="col-md-2 col-sm-2 col-md-offset-1 box0">
-                            <div class="box1">
-                                <a data-toggle="modal" href="#task_modal_box" data-toggle="tooltip" title="Create Task" >
-                                <span class="li_bubble"></span>
-                                <h3>+Tasks</h3>
-                                </a>
-                            </div>
-                                <p>Add new task to the project!</p>
+                        <div class="col-md-2 col-sm-2 box0">
+                          <div class="box1">
+                              <a data-toggle="modal" href="#task_modal_box" data-toggle="tooltip" title="Create Task" >
+                              <span class="li_bubble"></span>
+                              <h3>+Tasks</h3>
+                              </a>
+                          </div>
+                              <p>Add new task to the project!</p>
                         </div>
                         <div class="col-md-2 col-sm-2 box0">
                             <div class="box1">
@@ -310,17 +343,38 @@
                             </div>
                                 <p><?php echo $task_count-1; ?> task/s in the project!</p>
                         </div>
-                        <div class="col-md-2 col-sm-2 box0">
-                            <div class="box1">
-                                <a href="">
-                                <span class="li_trash"></span>
-                                <h3>-Tasks</h3>
-                                </a>
-                            </div>
-                                <p>Remove existing task from the project!</p>
-                        </div>
                       </div>
-                      <?php } ?>    
+                      <?php } ?>
+                      <!--project task div end-->
+                      <?php
+                        if(isset($_POST['submit']) && $_POST['submit']=="submit"){
+                            if(isset($search)){
+                                foreach($search as $search){
+                                    $p_id=$search['project_id'];
+                                    $p_name=$search['project_name'];
+                                    $p_description=$search['project_description'];
+                                
+                      ?>
+                      <style>
+                          #searchResultDiv{
+                              width:100%;
+                              padding: 10px;
+                              border-bottom:1px solid #CCC;
+                          }
+                          #searchResultDiv a:hover{
+                              text-decoration: underline;
+                              color: #357ebd;
+                          }
+                      </style>
+                        <div id="searchResultDiv">
+                            <a href="<?php echo base_url()?>Index_controller/project_tasks/<?php echo $p_id?>"><font style="font-size: 18px;font-weight: 600">Project Name:</font><font style="font-size: 16px"><?php echo $p_name; ?></font></a>
+                            <p style="padding: 10px;text-align: left"><font style="font-size: 14px;text-indent: 20px;color:#999999"><?php echo $p_description; ?></font></p>
+                        </div>
+                      <?php
+                                }
+                            }    
+                        }
+                      ?>
                   </div>
                   
                   
@@ -555,6 +609,7 @@
         }
     </script>
   
-
+    <a href="http://localhost/PMT_V0/Index_controller/call_buttons">buttons</a>
+    <a href="http://localhost/PMT_V0/Index_controller/models">buttons</a>
   </body>
 </html>
