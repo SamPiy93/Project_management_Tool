@@ -14,7 +14,7 @@
 class Task_model extends CI_Model{
     //put your code here
     protected $task_table="tasks";
-            function __construct() {
+    function __construct() {
         parent::__construct();
         $this->load->database();
     }
@@ -49,5 +49,24 @@ class Task_model extends CI_Model{
         return $query;
     }
     
+    public function get_member_details_of_the_project($project_id){
+        //getting member details of the project by the project id
+        $query=$this->db->query("select * from pusers");
+    }
+    public function assign_task($mem_id,$pro_id,$task_id){
+        //assign the task to corresponding member or members in the team
+        $check=$this->db->query("select * from workLoad where member_id='$mem_id' && project_id='$pro_id' && task_id='$task_id'");
+        
+        if($check->num_rows()==0){
+            $query=$this->db->query("insert into workLoad(member_id,project_id,task_id) values('$mem_id','$pro_id','$task_id')");
+            if(($this->db->affected_rows())>0){
+                return 1;
+            }else{
+                return 0;
+            }
+        }else{
+            return 0;
+        }
+    }
 }
 ?>
