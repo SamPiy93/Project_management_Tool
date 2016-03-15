@@ -2,7 +2,17 @@
 
 class home_model extends CI_Model{
     
+    
+        /*
+        * getMostMessages
+        *
+        * Get upmost recent messages
+        *
+        * @param $memID(integer) id of the member
+        * @return String Array Object of upmost recent messages
+        */
         function getMostMessages($memID){
+            //get most recent three messages
             $query = $this->db->query('
                 SELECT m.message, m.date_time, u.first_name, u.last_name, u.id, r.status
                 FROM messages m, msg_recivers r, pusers u
@@ -24,6 +34,15 @@ class home_model extends CI_Model{
             return $query->result() ;
         }
     
+        
+        /*
+        * getMostNotification
+        *
+        * Get upmost recent notifications
+        *
+        * @param $memID(integer) id of the member
+        * @return String Array Object of upmost recent notifications
+        */
         function getMostNotification($memID){
             $query = $this->db->query('
                 SELECT c.date, c.note, n.date_time, p.project_name
@@ -43,7 +62,17 @@ class home_model extends CI_Model{
             return $query->result() ;
         }
     
+        
+        /*
+        * time_elapsed_string
+        *
+        * Set elapsed time compared to now, to a string
+        *
+        * @param $datetime(date) date and time
+        * @return $string(string) time in elapsed format
+        */
         function time_elapsed_string($datetime, $full = false) {
+        //get how many hours ago
         date_default_timezone_set('Asia/Colombo');
         $now = new DateTime;
         $ago = new DateTime($datetime);
